@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using netvieraproxy.Models.UPnP;
 
 namespace netvieraproxy
 {
@@ -32,6 +33,12 @@ namespace netvieraproxy
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+            }
+
+            string endpoint;
+            using (var s = new DiscoverySocket())
+            {
+                endpoint = s.Discover();
             }
 
             app.UseMvc();
