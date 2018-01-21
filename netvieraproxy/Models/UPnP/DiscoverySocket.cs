@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Xml.Linq;
 
 namespace netvieraproxy.Models.UPnP
 {
@@ -45,6 +46,18 @@ namespace netvieraproxy.Models.UPnP
 
             var endpoint = ParseLocationData(buffer, bytesrecvd);
             return endpoint;
+        }
+
+        public string GetControlUrl(string advertisementXmlPath) 
+        {
+            var baseUri = new Uri(advertisementXmlPath);
+
+            XDocument doc = XDocument.Load(advertisementXmlPath);
+            var ns = doc.Descendants().First().GetDefaultNamespace();
+            var controlpath = doc.Descendants(ns + "controlURL");
+            var path = controlpath.FirstOrDefault().Value;
+            Uri controluri = new Uri(baseUri, path);
+            return controluri.AbsoluteUri;
         }
 
         void Send(DiscoveryPacket packet) {
